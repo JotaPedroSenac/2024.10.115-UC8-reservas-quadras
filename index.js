@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const { sequelize } = require('./src/config/configDb');
 const quadraRoutes = require('./src/modulos/quadra/routes/quadra.route');
 const usuarioRoutes = require('./src/modulos/usuario/routes/usuario.route');
+const autenticacaoRoutes = require('./src/modulos/autenticacao/routes/autenticacao.route')
 
 
 dotenv.config();
@@ -13,6 +14,7 @@ app.use(express.json());
 
 app.use('/api', quadraRoutes);
 app.use('/api', usuarioRoutes);
+app.use('/api', autenticacaoRoutes)
 
 
 app.listen(port, async () => {
