@@ -17,7 +17,7 @@ class QuadraController {
             res.status(201).json(novaReserva);
         } catch (error) {
             console.error('Erro ao cadastrar reserva:', error);
-            res.status(500).json({ error: 'Erro ao cadastrar reserva' });
+            res.status(500).json({ error: 'Erro ao cadastrar reserva', erro: error.message });
         }
     }
 
