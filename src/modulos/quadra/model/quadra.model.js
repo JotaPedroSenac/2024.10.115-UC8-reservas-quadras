@@ -1,5 +1,6 @@
 const { sequelize } = require('../../../config/configDb');
 const { DataTypes } = require('sequelize');
+const Usuario = require('../../usuario/model/usuario.model')
 
 const Quadra = sequelize.define(
     "Quadra",
@@ -30,14 +31,24 @@ const Quadra = sequelize.define(
             allowNull: false
         },
         usuario_responsavel:{
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: { model: Usuario, key: 'id' },
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
         },
     },
     {
         tableName: 'quadra',
         createdAt: 'criado_em',
         updatedAt: 'atualizado_em',
+        validate: {
+            dataFimMaiorQueInicio() {
+            if (this.data_fim <= this.data_inicio) {
+            throw new Error('data_fim deve ser posterior a data_inicio.');
+      }
+    },
+  },
     }
 );
 

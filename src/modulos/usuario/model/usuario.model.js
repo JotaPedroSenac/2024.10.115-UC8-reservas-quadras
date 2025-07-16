@@ -6,20 +6,37 @@ const Usuario = sequelize.define(
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
         },
         nome: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING(300),
+            allowNull: false,
+            validate: {
+                len: {
+                    args: [2, 300],
+                    msg: 'O nome do usuário deve ter no mínimo 2 caracteres e no máximo 300'
+                }
+            }
         },
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
+            unique: true,
+            validate: {
+                isEmail: { msg: "Email inválido" },
+            },
+
         },
         senha: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                is: {
+                    args: /^(?=.{6,})(?=.*[A-Za-z])(?=.*[^A-Za-z0-9]).+$/,
+                    msg: 'Senha precisa ter pelo menos 5 caracteres, incluir uma letra e um caractere especial '
+                }
+
+            }
         }
     },
     {

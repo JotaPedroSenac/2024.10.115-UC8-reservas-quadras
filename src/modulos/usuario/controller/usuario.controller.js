@@ -12,7 +12,7 @@ class UsuarioController {
             }
 
             // criptografia
-            const senhaCriptografada = await bcrypt.hash(senha, 15);
+            const senhaCriptografada = await bcrypt.hash(senha, 12);
 
             const novoUsuario = await usuario.create({
                 nome,
@@ -29,8 +29,14 @@ class UsuarioController {
 
     static async listarUsuarios(req, res) {
         try {
-            const usuarios = await usuario.findAll();
-            res.status(200).json(usuarios);
+            const usuarios = await usuario.findAll({
+                attributes: ['nome', 'email'], // apenas os campos públicos
+            });
+            if(usuarios.length === 0){
+                return res.status(200).json({ msg: "Não há usuários cadastrados", data: []});
+            }
+            return res.status(200).json(usuarios);
+            
         } catch (error) {
             console.error('Erro ao listar usuários:', error);
             res.status(500).json({ error: 'Erro ao listar usuários' });
@@ -40,7 +46,9 @@ class UsuarioController {
     static async buscarUsuarioPorId(req, res) {
         try {
             const { id } = req.params;
-            const usuarioEncontrado = await usuario.findByPk(id);
+            const usuarioEncontrado = await usuario.findByPk(id, {
+                attributes: {exclude: ['senha']}
+            });
             if (!usuarioEncontrado) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
@@ -56,8 +64,17 @@ class UsuarioController {
             const { id } = req.params;
             const { nome, email, senha } = req.body;
 
+            if(!id || !nome || !email || !senha){
+                return res
+                .status(400)
+                .json({ msg: "Todos os campos devem ser preenchidos!" });
+            }
+
+            // criptografia
+            const senhaCriptografada = await bcrypt.hash(senha, 12);
+
             const usuarioAtualizado = await usuario.update(
-                { nome, email, senha },
+                { nome, email, senha: senhaCriptografada },
                 { where: { id } }
             );
 
