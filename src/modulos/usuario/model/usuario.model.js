@@ -18,6 +18,16 @@ const Usuario = sequelize.define(
                 }
             }
         },
+        papel: {
+            type: DataTypes.ENUM("aluno", "funcionario", "admin"),
+            allowNull: false,
+            validate: {
+              isIn: {
+                args: [["aluno", "funcionario", "admin"]],
+                msg: "O papel deve ser aluno, funcionário ou admin."
+              }
+            }
+          },
         email: {
             type: DataTypes.STRING,
             allowNull: false,

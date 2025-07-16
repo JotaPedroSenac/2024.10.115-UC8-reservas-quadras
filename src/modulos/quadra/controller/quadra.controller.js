@@ -1,85 +1,79 @@
 const quadra = require('../model/quadra.model');
 
 class QuadraController {
-    static async cadastrarReserva(req, res) {
+    static async cadastrarQuadra(req, res) {
         try {
-            const { quadra_nome, tipo, data_reserva, hora_inicio, hora_fim, usuario_responsavel } = req.body;
+            const { quadra_nome, tipo} = req.body;
 
-            const novaReserva = await quadra.create({
+            const novaQuadra = await quadra.create({
                 quadra_nome,
-                tipo,
-                data_reserva,
-                hora_inicio,
-                hora_fim,
-                usuario_responsavel
+                tipo
             });
 
-            res.status(201).json(novaReserva);
+            res.status(201).json(novaQuadra);
         } catch (error) {
             console.error('Erro ao cadastrar reserva:', error);
-            res.status(500).json({ error: 'Erro ao cadastrar reserva', erro: error.message });
+            res.status(500).json({ error: 'Erro ao cadastrar Quadra', erro: error.message });
         }
     }
 
-    static async listarReservas(req, res) {
+    static async listarQuadras(req, res) {
         try {
-            const reservas = await quadra.findAll();
-            res.status(200).json(reservas);
+            const quadras = await quadra.findAll();
+            res.status(200).json(quadras);
         } catch (error) {
             console.error('Erro ao listar reservas:', error);
             res.status(500).json({ error: 'Erro ao listar reservas' });
         }
     }
 
-    static async buscarReservaPorId(req, res) {
+    static async buscarQuadraPorId(req, res) {
         try {
             const { id } = req.params;
-            const reserva = await quadra.findByPk(id);
-            if (!reserva) {
-                return res.status(404).json({ error: 'Reserva não encontrada' });
+            const quadra = await quadra.findByPk(id);
+            if (!quadra) {
+                return res.status(404).json({ error: 'quadra não encontrada' });
             }
-            res.status(200).json(reserva);
+            res.status(200).json(quadra);
         } catch (error) {
-            console.error('Erro ao buscar reserva por ID:', error);
-            res.status(500).json({ error: 'Erro ao buscar reserva por ID' });
+            console.error('Erro ao buscar quadra por ID:', error);
+            res.status(500).json({ error: 'Erro ao buscar quadra por ID' });
         }
     }
 
-    static async atualizarReserva(req, res) {
+    static async atualizarQuadra(req, res) {
         try {
             const { id } = req.params;
-            const { quadra_nome, tipo, data_reserva, hora_inicio, hora_fim, usuario_responsavel } = req.body;
+            const { quadra_nome, tipo } = req.body;
 
-            const reservaAtualizada = await quadra.update(
-                { quadra_nome, tipo, data_reserva, hora_inicio, hora_fim, usuario_responsavel },
+            const quadraAtualizada = await quadra.update(
+                { quadra_nome, tipo },
                 { where: { id } }
             );
 
-            if (reservaAtualizada[0] === 0) {
-                return res.status(404).json({ error: 'Reserva não encontrada' });
+            if (quadraAtualizada[0] === 0) {
+                return res.status(404).json({ error: 'Quadra não encontrada' });
             }
 
-            res.status(200).json({ message: 'Reserva atualizada com sucesso' });
+            res.status(200).json({ message: 'Quadra atualizada com sucesso' });
         } catch (error) {
-            console.error('Erro ao atualizar reserva:', error);
-            res.status(500).json({ error: 'Erro ao atualizar reserva' });
+            console.error('Erro ao atualizar quadra:', error);
+            res.status(500).json({ error: 'Erro ao atualizar quadra' });
         }
     }
 
-    static async excluirReserva(req, res) {
+    static async excluirQuadra(req, res) {
         try {
             const { id } = req.params;
 
-            const reservaExcluida = await quadra.destroy({ where: { id } });
+            const quadraExcluida = await quadra.destroy({ where: { id } });
 
-            if (reservaExcluida === 0) {
-                return res.status(404).json({ error: 'Reserva não encontrada' });
+            if (quadraExcluida === 0) {
+                res.status(200).json({ message: 'Quadra excluída com sucesso' });
             }
-
-            res.status(200).json({ message: 'Reserva excluída com sucesso' });
         } catch (error) {
-            console.error('Erro ao excluir reserva:', error);
-            res.status(500).json({ error: 'Erro ao excluir reserva' });
+            console.error('Erro ao excluir quadra:', error);
+            res.status(500).json({ error: 'Erro ao excluir quadra' });
         }
     }
 

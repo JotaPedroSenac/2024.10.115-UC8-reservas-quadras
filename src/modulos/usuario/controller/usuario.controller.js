@@ -1,11 +1,26 @@
-const usuario = require('../model/usuario.model');
+const UsuarioModel = require('../model/usuario.model');
 const bcrypt = require('bcryptjs');
 
 class UsuarioController {
+    static async perfil(req, res) {
+        try {
+          const { id } = req.usuario
+          const Usuario = await UsuarioModel.findOne({
+            where: {id},
+            attributes: ['nome','email', 'papel']
+          });
+          if (!Usuario) {
+            return res.status(401).json({ msg: "Não existe Usuario cadastrado!" });
+          }
+          res.status(200).json(Usuario);
+        } catch (error) {
+            res.status(500).json({msg: 'Erro do servidor. Tente novamente mais tarde!', erro: error.message})
+        }
+      }
     static async cadastrarUsuario(req, res) {
         try {
-            const { nome, email, senha } = req.body;
-            if(!nome || !email || !senha){
+            const { nome, papel, email, senha } = req.body;
+            if(!nome || !papel || !email || !senha){
                 return res
                 .status(400)
                 .json({ msg: "Todos os campos devem ser preenchidos!" });
@@ -14,8 +29,9 @@ class UsuarioController {
             // criptografia
             const senhaCriptografada = await bcrypt.hash(senha, 12);
 
-            const novoUsuario = await usuario.create({
+            const novoUsuario = await UsuarioModel.create({
                 nome,
+                papel,
                 email,
                 senha: senhaCriptografada
             });
@@ -23,14 +39,14 @@ class UsuarioController {
             res.status(201).json(novoUsuario);
         } catch (error) {
             console.error('Erro ao cadastrar usuário:', error);
-            res.status(500).json({ error: 'Erro ao cadastrar usuário' });
+            res.status(500).json({ error: 'Erro ao cadastrar usuário', erro: error.message });
         }
     }
 
     static async listarUsuarios(req, res) {
         try {
-            const usuarios = await usuario.findAll({
-                attributes: ['nome', 'email'], // apenas os campos públicos
+            const usuarios = await UsuarioModel.findAll({
+                attributes: ['nome', 'papel', 'email'], // apenas os campos públicos
             });
             if(usuarios.length === 0){
                 return res.status(200).json({ msg: "Não há usuários cadastrados", data: []});
@@ -46,7 +62,7 @@ class UsuarioController {
     static async buscarUsuarioPorId(req, res) {
         try {
             const { id } = req.params;
-            const usuarioEncontrado = await usuario.findByPk(id, {
+            const usuarioEncontrado = await UsuarioModel.findByPk(id, {
                 attributes: {exclude: ['senha']}
             });
             if (!usuarioEncontrado) {
@@ -62,9 +78,9 @@ class UsuarioController {
     static async atualizarUsuario(req, res) {
         try {
             const { id } = req.params;
-            const { nome, email, senha } = req.body;
+            const { nome, papel, email, senha } = req.body;
 
-            if(!id || !nome || !email || !senha){
+            if(!id || !nome || !papel || !email || !senha){
                 return res
                 .status(400)
                 .json({ msg: "Todos os campos devem ser preenchidos!" });
@@ -73,8 +89,8 @@ class UsuarioController {
             // criptografia
             const senhaCriptografada = await bcrypt.hash(senha, 12);
 
-            const usuarioAtualizado = await usuario.update(
-                { nome, email, senha: senhaCriptografada },
+            const usuarioAtualizado = await UsuarioModel.update(
+                { nome, papel, email, senha: senhaCriptografada },
                 { where: { id } }
             );
 
@@ -93,7 +109,7 @@ class UsuarioController {
         try {
             const { id } = req.params;
 
-            const usuarioExcluido = await usuario.destroy({ where: { id } });
+            const usuarioExcluido = await UsuarioModel.destroy({ where: { id } });
 
             if (usuarioExcluido === 0) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
