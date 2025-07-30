@@ -12,14 +12,14 @@ module.exports = {
       quadra_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: Quadra, key: 'id' },
+        references: { model: 'quadra', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
       },
       usuario_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: Usuario, key: 'id' },
+        references: { model: 'usuario', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },

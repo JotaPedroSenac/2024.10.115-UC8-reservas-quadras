@@ -14,7 +14,8 @@ const Reserva = sequelize.define(
         quadra_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: {model: Quadra, key: 'id'},
+            references: {
+                model: Quadra, key: 'id'},
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
         },
